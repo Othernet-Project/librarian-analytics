@@ -20,7 +20,7 @@
       url: getTrackingUrl()
       type: 'POST'
       data: data
-      async: false  # <-- DO NOT REMOVE THIS
+      async: not (data.type in ['folder', 'download'])
     res.done (data) ->
       console.log data
 

@@ -8,13 +8,13 @@
     return "/" + locale + "/" + TRACK_PATH + "/";
   };
   processEvent = function(e, data) {
-    var res;
+    var ref, res;
     data.path = decodeURIComponent(data.path);
     res = $.ajax({
       url: getTrackingUrl(),
       type: 'POST',
       data: data,
-      async: false
+      async: !((ref = data.type) === 'folder' || ref === 'download')
     });
     return res.done(function(data) {
       return console.log(data);
