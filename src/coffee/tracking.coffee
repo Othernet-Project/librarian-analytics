@@ -20,11 +20,12 @@
       url: getTrackingUrl()
       type: 'POST'
       data: data
-      async: false  # <-- DO NOT REMOVE THIS
-    res.done (data) ->
-      console.log data
+      async: not (data.type in ['folder', 'download'])
+    return
 
 
   ($ window).on 'opener-click', processEvent
+
+  return
 
 ) this, this.jQuery

@@ -8,17 +8,14 @@
     return "/" + locale + "/" + TRACK_PATH + "/";
   };
   processEvent = function(e, data) {
-    var res;
+    var ref, res;
     data.path = decodeURIComponent(data.path);
     res = $.ajax({
       url: getTrackingUrl(),
       type: 'POST',
       data: data,
-      async: false
-    });
-    return res.done(function(data) {
-      return console.log(data);
+      async: !((ref = data.type) === 'folder' || ref === 'download')
     });
   };
-  return ($(window)).on('opener-click', processEvent);
+  ($(window)).on('opener-click', processEvent);
 })(this, this.jQuery);
