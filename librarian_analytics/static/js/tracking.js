@@ -10,14 +10,11 @@
   processEvent = function(e, data) {
     var ref, res;
     data.path = decodeURIComponent(data.path);
-    res = $.ajax({
+    return res = $.ajax({
       url: getTrackingUrl(),
       type: 'POST',
       data: data,
       async: !((ref = data.type) === 'folder' || ref === 'download')
-    });
-    return res.done(function(data) {
-      return console.log(data);
     });
   };
   return ($(window)).on('opener-click', processEvent);

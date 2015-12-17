@@ -21,8 +21,6 @@
       type: 'POST'
       data: data
       async: not (data.type in ['folder', 'download'])
-    res.done (data) ->
-      console.log data
 
 
   ($ window).on 'opener-click', processEvent
