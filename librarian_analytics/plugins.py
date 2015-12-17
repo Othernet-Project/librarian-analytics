@@ -1,5 +1,3 @@
-import uuid
-import logging
 import functools
 
 from bottle import request, response
@@ -52,17 +50,14 @@ def set_track_id(cookie_name):
     response.set_cookie(cookie_name, cookie_data, path='/')
 
 
-def tracking_id_cookie_plugin(supervisor):
-    tracking_cookie_name = supervisor.config['analytics.tracking_cookie_name']
-    device_id_file = supervisor.config['analytics.device_id_file']
-    device_id = prepare_device_id(device_id_file)
-
-    def plugin(fn):
-        @functools.wraps(fn)
-        def wrapper(*args, **kwargs):
-            request.device_id = device_id
-            set_track_id(tracking_cookie_name)
-            return fn(*args, **kwargs)
-        return wrapper
-
-    return plugin
+def install_tracking_cookie(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        config = request.app.supervisor.config
+        tracking_cookie_name = config['analytics.tracking_cookie_name']
+        device_id_file = config['analytics.device_id_file']
+        device_id = prepare_device_id(device_id_file)
+        request.device_id = device_id
+        set_track_id(tracking_cookie_name)
+        return fn(*args, **kwargs)
+    return wrapper
