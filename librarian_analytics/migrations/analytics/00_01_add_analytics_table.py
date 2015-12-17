@@ -1,12 +1,13 @@
 SQL = """
 create table analytics
 (
-    session_id varchar primary key,
+    user_id varchar not null,
     timestamp timestamptz not null,
     timezone decimal not null,
     path varchar not null,
-    action integer not null,
-    user_agent varchar not null,
+    action varchar not null,
+    os_family varchar not null,
+    agent_type integer not null,
     extra_data varchar
 );
 """
