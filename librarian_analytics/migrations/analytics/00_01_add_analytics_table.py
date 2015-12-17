@@ -3,6 +3,7 @@ create table analytics
 (
     session_id varchar primary key,
     timestamp timestamptz not null,
+    timezone decimal not null,
     path varchar not null,
     action integer not null,
     user_agent varchar not null,
