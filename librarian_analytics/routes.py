@@ -2,7 +2,7 @@ import logging
 
 from bottle import request
 
-from .plugins import install_tracking_cookie
+from .decorators import install_tracking_cookie
 
 
 @install_tracking_cookie
