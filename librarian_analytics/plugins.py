@@ -47,7 +47,7 @@ def set_track_id(cookie_name):
         'agent_type': agent_type
     }
     cookie_data = data.serialize_cookie_data(user_id, agent_type)
-    response.set_cookie(cookie_name, cookie_data)
+    response.set_cookie(cookie_name, cookie_data, path='/')
 
 
 def tracking_id_cookie_plugin(supervisor):
