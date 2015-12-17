@@ -19,7 +19,7 @@ setup(
     include_package_data=True,
     long_description=read('README.rst'),
     install_requires=[
-        'ua-parser',
+        'user-agents',
         'librarian_core',
         'librarian_filemanager',
     ],
