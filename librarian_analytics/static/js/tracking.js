@@ -10,7 +10,7 @@
   processEvent = function(e, data) {
     var ref, res;
     data.path = decodeURIComponent(data.path);
-    return res = $.ajax({
+    res = $.ajax({
       url: getTrackingUrl(),
       type: 'POST',
       data: data,

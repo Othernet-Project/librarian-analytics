@@ -21,6 +21,7 @@
       type: 'POST'
       data: data
       async: not (data.type in ['folder', 'download'])
+    return
 
 
   ($ window).on 'opener-click', processEvent
