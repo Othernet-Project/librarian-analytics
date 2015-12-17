@@ -1,6 +1,7 @@
 import functools
 
 from bottle import request, response
+from bottle_utils.lazy import caching_lazy
 
 from . import data
 
@@ -10,6 +11,7 @@ EXPORTS = {
 }
 
 
+@caching_lazy
 def prepare_device_id(path):
     try:
         with open(path, 'w') as f:
