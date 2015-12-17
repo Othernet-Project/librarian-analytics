@@ -17,5 +17,5 @@
       async: !((ref = data.type) === 'folder' || ref === 'download')
     });
   };
-  return ($(window)).on('opener-click', processEvent);
+  ($(window)).on('opener-click', processEvent);
 })(this, this.jQuery);

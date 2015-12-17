@@ -26,4 +26,6 @@
 
   ($ window).on 'opener-click', processEvent
 
+  return
+
 ) this, this.jQuery
