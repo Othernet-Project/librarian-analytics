@@ -14,7 +14,7 @@ EXPORTS = {
 @caching_lazy
 def prepare_device_id(path):
     try:
-        with open(path, 'w') as f:
+        with open(path, 'r') as f:
             current_key = f.read()
     except IOError:
         current_key = ''
