@@ -6,11 +6,6 @@ from bottle_utils.lazy import caching_lazy
 from . import data
 
 
-EXPORTS = {
-    'tracking_id_cookie_plugin': {},
-}
-
-
 @caching_lazy
 def prepare_device_id(path):
     try:
