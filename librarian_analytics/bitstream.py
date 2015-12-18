@@ -79,7 +79,7 @@ class BitField(object):
 
     def __new__(cls, *args, **kwargs):
         if 'name' in kwargs:
-            return super(BitField, cls).__new__(cls, *args, **kwargs)
+            return super(BitField, cls).__new__(cls)
         return FieldWrapper(cls, args, kwargs)
 
     def __init__(self, name, index, width, data_type):
