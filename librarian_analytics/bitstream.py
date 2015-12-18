@@ -167,7 +167,7 @@ class BitStream(object):
             return processor(value)
         return value
 
-    def _deserialize(self):
+    def deserialize(self):
         bitstream = bitarray()
         bitstream.frombytes(self._data)
         end_pattern = bitarray()
@@ -195,7 +195,7 @@ class BitStream(object):
         datagram.frombytes(self.end_marker)
         return datagram
 
-    def _serialize(self):
+    def serialize(self):
         bitstream = bitarray()
         for item in self._data:
             bitstream = bitstream + self._to_datagram(item)
@@ -204,9 +204,9 @@ class BitStream(object):
     @classmethod
     def from_bytes(cls, raw_bytes):
         instance = cls(raw_bytes)
-        return instance._deserialize()
+        return instance.deserialize()
 
     @classmethod
     def to_bytes(cls, raw_data):
         instance = cls(raw_data)
-        return instance._serialize()
+        return instance.serialize()
