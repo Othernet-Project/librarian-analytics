@@ -1,5 +1,6 @@
 ((window, $) ->
   TRACK_PATH = 'analytics'
+  TZ_OFFSET = - (new Date()).getTimezoneOffset() / 60.0
 
 
   getTrackingUrl = () ->
@@ -9,6 +10,7 @@
 
   processEvent = (e, data) ->
     data.path = decodeURIComponent(data.path)
+    data.tz = TZ_OFFSET
 
     # We are deliberately doing a *synchronous* AJAX call here. This allows us
     # to circumvent the problem with asynchronous AJAX calls not completing
