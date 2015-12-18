@@ -1,6 +1,7 @@
 import logging
 import urllib
 import urllib2
+import uuid
 
 from librarian_core.utils import utcnow
 
@@ -29,7 +30,7 @@ class SendAnalyticsTask(object):
     def _serialize_device_id(self):
         device_id_file = self.supervisor.config['analytics.device_id_file']
         device_id = prepare_device_id(device_id_file)
-        return hex_to_bytes(str(device_id))
+        return hex_to_bytes(uuid.UUID(str(device_id), version=4).hex)
 
     def _serialize(self, data):
         device_id = self._serialize_device_id()
