@@ -43,6 +43,7 @@ class SendAnalyticsTask(object):
         # should not mark entries as sent if it was unsuccessful, so the
         # exception should propagate
         urllib2.urlopen(server_url, urllib.urlencode(query))
+        logging.debug("Analytics data transmission complete.")
 
     def _run(self):
         # fetch only unsent entries
