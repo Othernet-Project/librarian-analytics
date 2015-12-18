@@ -39,6 +39,9 @@ def to_utc_timestamp(dt):
     if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
         msg = "Naive datetime object passed. It is assumed that it's in UTC."
         logging.warning(msg)
+    elif dt.tzinfo != utc:
+        # local datetime with tzinfo
+        return calendar.timegm(dt.utctimetuple())
     return calendar.timegm(dt.timetuple())
 
 
