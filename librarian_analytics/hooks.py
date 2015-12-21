@@ -1,9 +1,24 @@
+import urllib2
+
 from .dashboard_plugin import AnalyticsDashboardPlugin
 from .tasks import send_analytics
 
 
+CONN_TEST_URL = 'http://status.outernet.is/'
+
+
+def has_internet_connection():
+    try:
+        urllib2.urlopen(CONN_TEST_URL, timeout=1)
+    except urllib2.URLError:
+        return False
+    else:
+        return True
+
+
 def initialize(supervisor):
-    supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
+    if not has_internet_connection():
+        supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
 
 
 def post_start(supervisor):
