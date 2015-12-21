@@ -1,25 +1,9 @@
 import functools
 
 from bottle import request, response
-from bottle_utils.lazy import caching_lazy
 
 from . import data
-
-
-@caching_lazy
-def prepare_device_id(path):
-    try:
-        with open(path, 'r') as f:
-            current_key = f.read()
-    except IOError:
-        current_key = ''
-    if not current_key:
-        # No key has been set yet
-        current_key = data.generate_device_id()
-        with open(path, 'w') as f:
-            f.write(current_key)
-    assert current_key != '', "'My dog ate it' is a poor excuse"
-    return current_key
+from .helpers import prepare_device_id
 
 
 def set_track_id(cookie_name):

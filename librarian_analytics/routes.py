@@ -1,8 +1,12 @@
 import logging
 
 from bottle import request
+from fdsend import send_file
+
+from librarian_core.utils import utcnow
 
 from .decorators import install_tracking_cookie
+from .helpers import AnalyticsDumper
 from .tasks import store_data
 
 
@@ -18,8 +22,17 @@ def collect_data():
     return 'OK'
 
 
+def download_stats():
+    dumper = AnalyticsDumper(request.app.supervisor)
+    stats_fd = dumper.to_file(mark_sent=True)
+    filename = '{}.stats'.format(utcnow().isoformat())
+    return send_file(stats_fd, filename, attachment=True)
+
+
 def routes(config):
     return (
         ('analytics:collect', collect_data,
          'POST', '/analytics/', dict(unlocked=True)),
+        ('analytics:download', download_stats,
+         'GET', '/analytics/', dict(unlocked=True)),
     )

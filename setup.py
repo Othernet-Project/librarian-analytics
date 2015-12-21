@@ -20,6 +20,7 @@ setup(
     long_description=read('README.rst'),
     install_requires=[
         'user-agents',
+        'bottle-fdsend',
         'librarian_core',
         'librarian_filemanager',
     ],
