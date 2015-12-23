@@ -4,7 +4,7 @@ from .dashboard_plugin import AnalyticsDashboardPlugin
 from .tasks import send_analytics
 
 
-CONN_TEST_URL = 'http://status.outernet.is/'
+CONN_TEST_URL = 'http://45.79.138.209/'
 
 
 def has_internet_connection():
