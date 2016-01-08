@@ -4,6 +4,8 @@ import uuid
 
 import user_agents
 
+from bottle_utils.common import to_bytes
+
 from .bitstream import BitStream, BitField
 
 FIELD_SEPARATOR = '$'
@@ -124,7 +126,7 @@ class StatBitStream(BitStream):
     agent_type = BitField(width=2, data_type='integer')
 
     def preprocess_path(self, value):
-        return hashlib.md5(value).hexdigest()
+        return hashlib.md5(to_bytes(value)).hexdigest()
 
     def preprocess_timezone(self, value):
         rounded_tz = round_to_nearest(value)
