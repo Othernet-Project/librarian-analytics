@@ -14,6 +14,9 @@ def store_data(supervisor, data):
 
 
 def send_analytics(supervisor):
+    if not supervisor.config.get('analytics.send_reports', False):
+        return
+
     dumper = AnalyticsDumper(supervisor)
     query = {'stream': dumper.to_string(mark_sent=False)}
     server_url = supervisor.config['analytics.server_url']

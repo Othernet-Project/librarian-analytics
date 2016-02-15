@@ -1,5 +1,7 @@
 import urllib2
 
+from bottle_utils.i18n import lazy_gettext as _
+
 from .dashboard_plugin import AnalyticsDashboardPlugin
 from .tasks import send_analytics
 
@@ -19,6 +21,14 @@ def has_internet_connection():
 def initialize(supervisor):
     if not has_internet_connection():
         supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
+
+    supervisor.exts.settings.add_group('analytics', _("Analytics settings"))
+    supervisor.exts.settings.add_field(name='send_reports',
+                                       group='analytics',
+                                       label=_("Send reports"),
+                                       value_type=bool,
+                                       required=False,
+                                       default=True)
 
 
 def post_start(supervisor):
