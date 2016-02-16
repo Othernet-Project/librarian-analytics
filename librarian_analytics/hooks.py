@@ -22,11 +22,15 @@ def initialize(supervisor):
     if not has_internet_connection():
         supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
 
+    help_text = _("Limited amount of non-personally-identifiable data is "
+                  "sent when the receiver has Internet connection when "
+                  "this setting is on.")
     supervisor.exts.settings.add_group('analytics', _("Analytics settings"))
     supervisor.exts.settings.add_field(name='send_reports',
                                        group='analytics',
                                        label=_("Send reports"),
                                        value_type=bool,
+                                       help_text=help_text,
                                        required=False,
                                        default=True)
 
