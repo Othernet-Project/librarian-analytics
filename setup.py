@@ -19,6 +19,7 @@ setup(
     include_package_data=True,
     long_description=read('README.rst'),
     install_requires=[
+        'bitarray',
         'user-agents',
         'bottle-fdsend',
         'librarian_core',
