@@ -25,7 +25,6 @@
     # started. As a side-effect, the page blocks while the request is being
     # processed. We don't yet know if this poses a significant problem during
     # normal usage.
-    console.log data
     res = $.ajax
       url: getTrackingUrl()
       type: 'POST'
