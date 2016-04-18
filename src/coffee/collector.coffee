@@ -1,45 +1,45 @@
 ((window, $) ->
-  selectors = {
-    fileOpenListItem: 'a.file-list-link',
-    fileDownloadListItem: 'a.file-list-control',
-    videoPlayListItem: '.views-sidebar-video .playlist-list-item-link',
-    audioPlayListItem: '.views-sidebar-audio .playlist-list-item-link',
-    galleryListItem: '.gallery-list-item-link'
+  mainPanel = $ "##{window.o.pageVars.mainPanelId}"
+  propagatingItemSelectors = [
+    'a.file-list-link',
+    'a.file-list-download'
+  ]
+  # a click event handler must be directly attached to these elements as
+  # their other handlers are preventing event propagation, so the outer
+  # mainPanel selector is never reached.
+  nonPropagatingItemSelectors = [
+    '.playlist-list-item-link',
+    '.gallery-list-item-link'
+  ]
+  typeMapping = {
+    file: "file",
+    directory: "folder",
+    download: "download"
   }
 
   collectEvent = (path, type) ->
     ($ window).trigger 'analytics-collect', [{path: path, type: type}]
 
-  fileOpenListItemClicked = (e) ->
+  listItemClicked = (e) ->
     el = $(@)
-    if el.data('mimetype') == 'html' 
-      collectEvent el.attr('href'), 'html'
-    else if el.data('type') == 'directory'
-      collectEvent el.attr('href'), 'folder'
-    else 
-      collectEvent el.attr('href'), 'file'
+    # in some cases, the metadata is stored on the wrapping <li> element,
+    # while in other cases on the link element itself. to avoid breaking
+    # existing code that depends on that structure, we allow both cases
+    # and pick the parent element automatically if the data is not found
+    # on the link element itself.
+    if not el.data('type')?
+      el = el.parent()
 
-  fileDownloadListItemClicked = (e) ->
-    el = $(@)
-    collectEvent el.attr('href'), 'download'
+    url = el.data('relpath')
+    itemType = typeMapping[el.data('type')]
+    mimeType = el.data('mimetype') or ''
+    # ignore portion of mimetype after the slash
+    mimeType = mimeType.substring(0, mimeType.indexOf("/"))
+    collectEvent url, (mimeType or itemType)
 
-  audioPlayListItemClicked = (e) ->
-    el = $(@).parent()
-    collectEvent el.data('direct-url'), 'audio'
-
-  videoPlayListItemClicked = (e) ->
-    el = $(@).parent()
-    collectEvent el.data('direct-url'), 'video'
-
-  galleryListItemClicked = (e) ->
-    el = $(@).parent()
-    collectEvent el.data('direct-url'), 'image'
-
-  $(selectors.fileOpenListItem).click fileOpenListItemClicked
-  $(selectors.fileDownloadListItem).click fileDownloadListItemClicked
-  $(selectors.audioPlayListItem).click audioPlayListItemClicked
-  $(selectors.videoPlayListItem).click videoPlayListItemClicked
-  $(selectors.galleryListItem).click galleryListItemClicked
+  mainPanel.on 'click', propagatingItemSelectors.join(), listItemClicked
+  for idx, selector of nonPropagatingItemSelectors
+    $(selector).on 'click', listItemClicked
 
   return
 
