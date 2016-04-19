@@ -37,7 +37,7 @@ def up(db, conf):
     old_data = db.fetchall(q)
     data = (converted(d) for d in old_data)
     for batch in batches(data):
-        q = db.Insert('stats', cols='time, payload')
+        q = db.Insert('stats', cols=['time', 'payload'])
         db.executemany(q, batch)
         db.pool.cursor.commit()
     db.execute('DROP TABLE tmp;')
