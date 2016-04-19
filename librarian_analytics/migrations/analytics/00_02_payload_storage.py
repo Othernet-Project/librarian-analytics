@@ -38,5 +38,4 @@ def up(db, conf):
     for batch in batches(data):
         q = db.Insert('stats', cols=['time', 'payload'])
         db.executemany(q, batch)
-        db.pool.cursor.commit()
     db.execute('DROP TABLE tmp;')
