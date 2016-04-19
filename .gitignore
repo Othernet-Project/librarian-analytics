@@ -1,6 +1,7 @@
 *.py[oc]
 *.sw[op]
 /.tox
+/.cache
 /*.egg-info
 /dist
 /build
