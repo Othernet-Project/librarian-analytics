@@ -4,9 +4,9 @@ try:
 except ImportError:
     from cStringIO import StringIO
 
+from bitpack.utils import hex_to_bytes
 from bottle_utils.lazy import caching_lazy
 
-from .bitstream import hex_to_bytes
 from .data import generate_device_id, StatBitStream
 
 
