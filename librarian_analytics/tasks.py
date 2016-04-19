@@ -21,7 +21,7 @@ def store_data(supervisor, data):
 def send_analytics(supervisor):
     if not supervisor.config.get('analytics.send_reports', False):
         return
-    device_id_file = supervisor.conf['analytics.device_id_file']
+    device_id_file = supervisor.config['analytics.device_id_file']
     db = exts.databases.analytics
     ids, payload = helpers.get_payload(db, device_id_file)
     server_url = supervisor.config['analytics.server_url']
