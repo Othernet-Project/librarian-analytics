@@ -8,7 +8,7 @@ from psycopg2 import Binary
 from bitpack.utils import hex_to_bytes
 from bottle_utils.lazy import caching_lazy
 
-from .data import generate_device_id
+from .data import generate_device_id, StatBitStream
 
 
 ANALYTICS_TABLE = 'stats'
@@ -46,7 +46,9 @@ def get_stats_bitstream(db):
     stats = get_stats(db)
     if not stats:
         return [], b''
-    bitstream = b''.join(bytes(s['payload']) for s in stats)
+    unpacked = sum([StatBitStream(bytes(s['payload'])).deserialize()
+                    for s in stats], [])
+    bitstream = StatBitStream(unpacked).serialize()
     ids = (s['id'] for s in stats)
     return ids, bitstream
 
