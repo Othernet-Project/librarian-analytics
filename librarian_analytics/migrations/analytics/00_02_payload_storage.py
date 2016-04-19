@@ -1,5 +1,5 @@
 from ...data import StatBitStream
-from ...helpers import as_time, batches
+from ...helpers import batches
 
 
 MKPAYLOAD = """
@@ -7,7 +7,7 @@ alter table stats rename to tmp;
 create table stats
 (
     id serial primary key,
-    time integer not null,  -- makes it cheaper to sort
+    time timestamp not null,  -- makes it cheaper to sort
     payload bytea not null
 );
 """
@@ -20,9 +20,8 @@ def converted(data):
     """
     # Filter out id and sent keys because we don't need those.
     data = {k: v for k, v in data.items() if k not in ['id', 'sent']}
-    timestamp = as_time(data['timestamp'])
     return {
-        'time': timestamp,
+        'time': data['timestamp'],
         'payload': StatBitStream.to_bytes([data]),
     }
 
