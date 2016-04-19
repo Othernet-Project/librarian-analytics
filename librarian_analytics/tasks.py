@@ -12,7 +12,7 @@ from .data import StatBitStream
 def store_data(supervisor, data):
     data['timestamp'] = timestamp = utcnow()
     helpers.save_stats(exts.databases.analytics, {
-        'timestamp': helpers.as_time(timestamp),
+        'time': timestamp,
         'payload': StatBitStream.to_bytes([data])
     })
     logging.debug("Data stored for user_id: %s", data['user_id'])
