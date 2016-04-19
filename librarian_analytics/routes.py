@@ -19,7 +19,7 @@ from .tasks import store_data
 def collect_data():
     data = dict(path=request.params.get('path'),
                 action=request.params.get('type'),
-                timezone=request.params.get('tz'))
+                timezone=float(request.params.get('tz')))
     data.update(request.tracking_info)
     supervisor = request.app.supervisor
     supervisor.exts.tasks.schedule(store_data, args=(supervisor, data))
