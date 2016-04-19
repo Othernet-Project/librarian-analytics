@@ -1,12 +1,17 @@
+import calendar
+import datetime
 import functools
 import hashlib
+import logging
 import uuid
 
 import user_agents
 
+from bitpack import BitStream, BitField, register_data_type
+from bitpack.utils import pack, unpack
 from bottle_utils.common import to_bytes
+from pytz import utc
 
-from .bitstream import BitStream, BitField
 
 FIELD_SEPARATOR = '$'
 
@@ -15,9 +20,10 @@ PHONE = 2
 TABLET = 3
 OTHER = 0
 AGENT_TYPES = [DESKTOP, PHONE, TABLET, OTHER]
-ACTIONS = ['html', 'image', 'audio', 'video', 'folder', 'download']
+ACTIONS = ['file', 'html', 'image', 'audio', 'video', 'folder', 'download']
 
 # !!! DO NOT CHANGE THE ORDER OF ELEMENTS IN THE OS_FAMILIES LIST !!!
+
 OS_FAMILIES = [
     'Android',
     'Arch Linux',
@@ -70,6 +76,27 @@ OS_FAMILIES = [
     'Windows Vista',
     'Windows XP',
 ]
+
+
+def from_utc_timestamp(timestamp):
+    """Converts the passed-in unix UTC timestamp into a datetime object."""
+    timestamp = float(unpack('>i', timestamp))
+    dt = datetime.datetime.utcfromtimestamp(timestamp)
+    return dt.replace(tzinfo=utc)
+
+
+def to_utc_timestamp(dt):
+    """Converts the passed-in datetime object into a unix UTC timestamp."""
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        msg = "Naive datetime object passed. It is assumed that it's in UTC."
+        logging.warning(msg)
+    elif dt.tzinfo != utc:
+        # local datetime with tzinfo
+        return pack('>i', calendar.timegm(dt.utctimetuple()))
+    return pack('>i', calendar.timegm(dt.timetuple()))
+
+
+register_data_type('timestamp', to_utc_timestamp, from_utc_timestamp)
 
 
 def generate_device_id():
