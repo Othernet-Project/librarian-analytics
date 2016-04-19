@@ -22,7 +22,7 @@ def converted(data):
     data = {k: v for k, v in data.items() if k not in ['id', 'sent']}
     return {
         'time': data['timestamp'],
-        'payload': StatBitStream.to_bytes([data]),
+        'payload': bytearray(StatBitStream.to_bytes([data])),
     }
 
 
