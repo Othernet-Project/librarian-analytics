@@ -49,6 +49,8 @@ def cleanup_stats(db, max_records, batch_size=500):
                       offset=max_records,
                       limit=1)
     id_set = db.fetchone(query)
+    if not id_set:
+        return 0
     delete_query = db.Delete(ANALYTICS_TABLE, where='id <= %s')
     return db.execute(delete_query, id_set)
 
