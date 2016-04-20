@@ -17,6 +17,13 @@ def populated_database(random_dataset, databases):
     return test_data, databases
 
 
+@pytest.fixture
+def sorted_database(random_dataset, databases):
+    test_data = sorted(list(random_dataset()), key=lambda x: x.timestamp)
+    databases.load_fixtures('analytics', 'stats', [d.row for d in test_data])
+    return test_data, databases
+
+
 # DATABASE
 
 
@@ -34,7 +41,6 @@ def test_get_stats_limited_ordering(populated_database):
     test_data, databases = populated_database
     all_stats = mod.get_stats(databases.analytics, limit=None)
     oldest_two_stats = mod.get_stats(databases.analytics, limit=2)
-    print(all_stats[0], oldest_two_stats[0])
     assert all_stats[0]['time'] == oldest_two_stats[0]['time']
     assert all_stats[1]['time'] == oldest_two_stats[1]['time']
     assert oldest_two_stats[0]['time'] < oldest_two_stats[1]['time']
@@ -84,6 +90,20 @@ def test_get_stats_bitstream_empty_database(databases):
     ids, bitstream = mod.get_stats_bitstream(databases.analytics, limit=None)
     assert len(list(ids)) == 0
     assert bitstream == b''
+
+
+def test_cleanup_stats(sorted_database):
+    max_records = 2
+    test_data, databases = sorted_database
+    stats_before = mod.get_stats(databases.analytics, limit=None)
+    rowcount = mod.cleanup_stats(databases.analytics, max_records=max_records)
+    stats_after = mod.get_stats(databases.analytics, limit=None)
+    assert len(stats_after) == max_records
+    assert rowcount == len(test_data) - max_records
+    # make sure the stats found after the cleanup are the stats that were the
+    # last ones in the results set acquired before cleanup
+    expected = stats_before[-1:-(max_records + 1)]
+    assert all([a['id'] == b['id'] for (a, b) in zip(stats_after, expected)])
 
 
 # DEVICE ID

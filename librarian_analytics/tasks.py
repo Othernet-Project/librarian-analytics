@@ -29,3 +29,10 @@ def send_analytics(supervisor):
     urllib2.urlopen(server_url, urllib.urlencode({'stream': payload}))
     helpers.clear_transmitted(db, ids)
     logging.debug("Analytics data transmission complete.")
+
+
+def cleanup_analytics(supervisor):
+    db = exts.databases.analytics
+    max_records = supervisor.config['analytics.max_records']
+    rowcount = helpers.cleanup_stats(db, max_records)
+    logging.debug("Analytics cleanup deleted %s records.", rowcount)

@@ -42,6 +42,17 @@ def clear_transmitted(db, ids):
     db.executemany(q, ((i,) for i in ids))
 
 
+def cleanup_stats(db, max_records, batch_size=500):
+    query = db.Select('id',
+                      sets=ANALYTICS_TABLE,
+                      order='-time',
+                      offset=max_records,
+                      limit=1)
+    id_set = db.fetchone(query)
+    delete_query = db.Delete(ANALYTICS_TABLE, where='id <= %s')
+    return db.execute(delete_query, id_set)
+
+
 def merge_streams(stats):
     unpacked = sum([StatBitStream(bytes(s['payload'])).deserialize()
                     for s in stats], [])
