@@ -11,7 +11,7 @@
       data = decodeURIComponent(data)
     return data
 
-  recordEvent = (e, data) ->
+  window.collectEvent = (data) ->
     data.path = decode(data.path)
     data.tz = TZ_OFFSET
     # We are deliberately doing a *synchronous* AJAX call here. This allows us
@@ -27,8 +27,6 @@
       async: data.type in ['folder'],
 
     return
-
-  ($ window).on 'analytics-collect', recordEvent
 
   return
 

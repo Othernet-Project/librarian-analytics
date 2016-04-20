@@ -26,8 +26,8 @@ def prep(data):
     return data
 
 
-def get_stats(db):
-    query = db.Select(sets=ANALYTICS_TABLE, order='time')
+def get_stats(db, limit):
+    query = db.Select(sets=ANALYTICS_TABLE, order='time', limit=limit)
     return db.fetchall(query)
 
 
@@ -42,13 +42,30 @@ def clear_transmitted(db, ids):
     db.executemany(q, ((i,) for i in ids))
 
 
-def get_stats_bitstream(db):
-    stats = get_stats(db)
-    if not stats:
-        return [], b''
+def cleanup_stats(db, max_records):
+    query = db.Select('id',
+                      sets=ANALYTICS_TABLE,
+                      order='-time',
+                      offset=max_records,
+                      limit=1)
+    id_set = db.fetchone(query)
+    if not id_set:
+        return 0
+    delete_query = db.Delete(ANALYTICS_TABLE, where='id <= %s')
+    return db.execute(delete_query, id_set)
+
+
+def merge_streams(stats):
     unpacked = sum([StatBitStream(bytes(s['payload'])).deserialize()
                     for s in stats], [])
-    bitstream = StatBitStream(unpacked).serialize()
+    return StatBitStream(unpacked).serialize()
+
+
+def get_stats_bitstream(db, limit):
+    stats = get_stats(db, limit)
+    if not stats:
+        return [], b''
+    bitstream = merge_streams(stats)
     ids = (s['id'] for s in stats)
     return ids, bitstream
 
@@ -80,9 +97,9 @@ def serialized_device_id(path):
 # PAYLOAD
 
 
-def get_payload(db, conf):
-    ids, bitstream = get_stats_bitstream(db)
-    device_id = serialized_device_id(conf)
+def get_payload(db, device_id_file, limit):
+    ids, bitstream = get_stats_bitstream(db, limit)
+    device_id = serialized_device_id(device_id_file)
     return ids, device_id + bitstream
 
 

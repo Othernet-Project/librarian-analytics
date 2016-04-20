@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import random
 import datetime
 from collections import namedtuple
@@ -74,7 +73,6 @@ def random_datapoint():
     - ``row`` (data to be inserted into the database row)
     """
     ts = random_ts()
-    tsoffset = int(time.mktime(ts.timetuple()))
     bitstream_data = {
         'user_id': data.generate_user_id(),
         'timestamp': ts,
@@ -86,10 +84,10 @@ def random_datapoint():
     }
     payload = data.StatBitStream.to_bytes([bitstream_data])
     row = {
-        'time': tsoffset,
+        'time': ts,
         'payload': psycopg2.Binary(payload)
     }
-    return dbfixture(tsoffset, bitstream_data, payload, row)
+    return dbfixture(ts, bitstream_data, payload, row)
 
 
 @pytest.fixture
