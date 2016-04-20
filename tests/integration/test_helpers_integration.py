@@ -102,7 +102,7 @@ def test_cleanup_stats(sorted_database):
     assert rowcount == len(test_data) - max_records
     # make sure the stats found after the cleanup are the stats that were the
     # last ones in the results set acquired before cleanup
-    expected = stats_before[-1:-(max_records + 1)]
+    expected = reversed(stats_before[-1:-(max_records + 1):-1])
     assert all([a['id'] == b['id'] for (a, b) in zip(stats_after, expected)])
 
 
