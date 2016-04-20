@@ -1,9 +1,10 @@
-import uuid
-try:
-    from io import BytesIO as StringIO
-except ImportError:
-    from cStringIO import StringIO
+import itertools
 
+import time
+import uuid
+
+from dateutil import parser
+from psycopg2 import Binary
 from bitpack.utils import hex_to_bytes
 from bottle_utils.lazy import caching_lazy
 
@@ -11,6 +12,48 @@ from .data import generate_device_id, StatBitStream
 
 
 ANALYTICS_TABLE = 'stats'
+
+
+# DATABASE OPERATIONS
+
+
+def prep(data):
+    """
+    Prepare row data for writing to database. Namely, the 'payload' column is
+    marked as binary data.
+    """
+    data['payload'] = Binary(data['payload'])
+    return data
+
+
+def get_stats(db):
+    query = db.Select(sets=ANALYTICS_TABLE, order='time')
+    return db.fetchall(query)
+
+
+def save_stats(db, data):
+    prep(data)
+    query = db.Insert(ANALYTICS_TABLE, cols=data.keys())
+    return db.execute(query, data)
+
+
+def clear_transmitted(db, ids):
+    q = db.Delete(ANALYTICS_TABLE, where='id = %s')
+    db.executemany(q, ((i,) for i in ids))
+
+
+def get_stats_bitstream(db):
+    stats = get_stats(db)
+    if not stats:
+        return [], b''
+    unpacked = sum([StatBitStream(bytes(s['payload'])).deserialize()
+                    for s in stats], [])
+    bitstream = StatBitStream(unpacked).serialize()
+    ids = (s['id'] for s in stats)
+    return ids, bitstream
+
+
+# DEVICE ID
 
 
 @caching_lazy
@@ -29,53 +72,70 @@ def prepare_device_id(path):
     return current_key
 
 
-def get_stats(db):
-    query = db.Select(sets=ANALYTICS_TABLE, where='sent = false')
-    return db.fetchall(query)
+def serialized_device_id(path):
+    device_id = prepare_device_id(path)
+    return hex_to_bytes(uuid.UUID(str(device_id), version=4).hex)
 
 
-def save_stats(db, data):
-    query = db.Insert(ANALYTICS_TABLE, cols=data.keys())
-    return db.execute(query, data)
+# PAYLOAD
 
 
-def mark_sent_stats(db, stats):
-    ids = [item['id'] for item in stats]
-    query = db.Update(ANALYTICS_TABLE, where=db.sqlin('id', ids), sent=True)
-    return db.execute(query, ids)
+def get_payload(db, conf):
+    ids, bitstream = get_stats_bitstream(db)
+    device_id = serialized_device_id(conf)
+    return ids, device_id + bitstream
 
 
-class AnalyticsDumper(object):
+# GENERAL HELPERS
 
-    def __init__(self, supervisor):
-        self.supervisor = supervisor
-        self._stats = None
 
-    def _serialize_device_id(self):
-        device_id_file = self.supervisor.config['analytics.device_id_file']
-        device_id = prepare_device_id(device_id_file)
-        return hex_to_bytes(uuid.UUID(str(device_id), version=4).hex)
+def as_time(timestamp):
+    """
+    Return integer timestamp based on string timestamp.
+    """
+    dt = parser.parse(timestamp)
+    return int(time.mktime(dt.timetuple()))
 
-    def to_string(self, mark_sent=False):
-        # fetch only unsent entries
-        db = self.supervisor.exts.databases.analytics
-        self._stats = get_stats(db)
-        if self._stats:
-            device_id = self._serialize_device_id()
-            serialized_data = device_id + StatBitStream.to_bytes(self._stats)
-            if mark_sent:
-                mark_sent_stats(db, self._stats)
-            return serialized_data
 
-    def to_file(self, mark_sent=False):
-        dump = self.to_string(mark_sent=mark_sent)
-        fd = StringIO()
-        if dump:
-            fd.write(dump)
-            fd.seek(0)
-        return fd
+class counter:
+    """
+    Callable that merely counts the number of times it was called and returns
+    ``True`` as long as the call count does not exceed the max count.
 
-    def mark_sent(self):
-        if self._stats:
-            db = self.supervisor.exts.databases.analytics
-            mark_sent_stats(db, self._stats)
+    Example:
+
+        >>> c = counter(3)
+        >>> c()  # call 1
+        True
+        >>> c()  # call 2
+        True
+        >>> c()  # call 3 (max)
+        True
+        >>> c()  # call 4
+        False
+        >>> c()  # call 5
+        False
+
+    """
+    # FIXME: Move this into librarian utils
+
+    def __init__(self, max=1000):
+        self.max = max
+        self.count = 0
+
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        return self.count <= self.max
+
+
+def batches(data, batch_size=1000):
+    """
+    Batches of ``batch_size`` items ceated from ``data`` iterable.
+    """
+    # FIXME: Move this into librarian utils
+    data = iter(data)
+    while True:
+        batch = list(itertools.islice(data, batch_size))
+        if not batch:
+            break
+        yield batch

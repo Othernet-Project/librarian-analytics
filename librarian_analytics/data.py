@@ -14,13 +14,16 @@ from pytz import utc
 
 
 FIELD_SEPARATOR = '$'
+
 DESKTOP = 1
 PHONE = 2
 TABLET = 3
 OTHER = 0
-
-
+AGENT_TYPES = [DESKTOP, PHONE, TABLET, OTHER]
 ACTIONS = ['file', 'html', 'image', 'audio', 'video', 'folder', 'download']
+
+# !!! DO NOT CHANGE THE ORDER OF ELEMENTS IN THE OS_FAMILIES LIST !!!
+
 OS_FAMILIES = [
     'Android',
     'Arch Linux',
