@@ -42,7 +42,7 @@ def clear_transmitted(db, ids):
     db.executemany(q, ((i,) for i in ids))
 
 
-def cleanup_stats(db, max_records, batch_size=500):
+def cleanup_stats(db, max_records):
     query = db.Select('id',
                       sets=ANALYTICS_TABLE,
                       order='-time',
