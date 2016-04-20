@@ -19,9 +19,7 @@ def has_internet_connection():
 
 
 def initialize(supervisor):
-    if not has_internet_connection():
-        supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
-
+    supervisor.exts.dashboard.register(AnalyticsDashboardPlugin)
     help_text = _("When this setting is on, a limited amount of "
                   "non-personally-identifiable file usage data is sent when "
                   "the receiver has Internet connection.")
