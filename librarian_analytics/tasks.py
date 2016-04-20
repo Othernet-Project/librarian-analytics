@@ -22,8 +22,9 @@ def send_analytics(supervisor):
     if not supervisor.config.get('analytics.send_reports', False):
         return
     device_id_file = supervisor.config['analytics.device_id_file']
+    throttle = supervisor.config['analytics.throttle']
     db = exts.databases.analytics
-    ids, payload = helpers.get_payload(db, device_id_file)
+    ids, payload = helpers.get_payload(db, device_id_file, throttle)
     server_url = supervisor.config['analytics.server_url']
     urllib2.urlopen(server_url, urllib.urlencode({'stream': payload}))
     helpers.clear_transmitted(db, ids)

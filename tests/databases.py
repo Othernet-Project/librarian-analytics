@@ -90,5 +90,3 @@ def random_name(prefix='test'):
     md5 = hashlib.md5()
     md5.update(rndbytes)
     return '{}_{}'.format(prefix, md5.hexdigest()[:7])
-
-
