@@ -36,7 +36,7 @@ def install_tracking_cookie(fn):
     def wrapper(*args, **kwargs):
         config = request.app.supervisor.config
         # report sending might be disabled in config
-        if config.get('analytics.send_reports', False):
+        if not config.get('analytics.send_reports', False):
             return 'OK'
         tracking_cookie_name = config['analytics.tracking_cookie_name']
         device_id_file = config['analytics.device_id_file']
