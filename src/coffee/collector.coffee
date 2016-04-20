@@ -30,12 +30,14 @@
     if not el.data('type')?
       el = el.parent()
 
-    url = el.data('relpath')
+    path = el.data('relpath')
     itemType = typeMapping[el.data('type')]
     mimeType = el.data('mimetype') or ''
     # ignore portion of mimetype after the slash
     mimeType = mimeType.substring(0, mimeType.indexOf("/"))
-    collectEvent url, (mimeType or itemType)
+    if window.collectEvent?
+      data = {path: path, type: (mimeType or itemType)}
+      window.collectEvent data
 
   mainPanel.on 'click', propagatingItemSelectors.join(), listItemClicked
   for idx, selector of nonPropagatingItemSelectors

@@ -18,16 +18,22 @@
     ]);
   };
   listItemClicked = function(e) {
-    var el, itemType, mimeType, url;
+    var data, el, itemType, mimeType, path;
     el = $(this);
     if (el.data('type') == null) {
       el = el.parent();
     }
-    url = el.data('relpath');
+    path = el.data('relpath');
     itemType = typeMapping[el.data('type')];
     mimeType = el.data('mimetype') || '';
     mimeType = mimeType.substring(0, mimeType.indexOf("/"));
-    return collectEvent(url, mimeType || itemType);
+    if (window.collectEvent != null) {
+      data = {
+        path: path,
+        type: mimeType || itemType
+      };
+      return window.collectEvent(data);
+    }
   };
   mainPanel.on('click', propagatingItemSelectors.join(), listItemClicked);
   for (idx in nonPropagatingItemSelectors) {
