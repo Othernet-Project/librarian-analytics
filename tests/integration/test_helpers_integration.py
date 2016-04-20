@@ -30,6 +30,16 @@ def test_get_stats(populated_database):
     assert payload in [d.payload for d in test_data]
 
 
+def test_get_stats_limited_ordering(populated_database):
+    test_data, databases = populated_database
+    all_stats = mod.get_stats(databases.analytics, limit=None)
+    oldest_two_stats = mod.get_stats(databases.analytics, limit=2)
+    print(all_stats[0], oldest_two_stats[0])
+    assert all_stats[0]['time'] == oldest_two_stats[0]['time']
+    assert all_stats[1]['time'] == oldest_two_stats[1]['time']
+    assert oldest_two_stats[0]['time'] < oldest_two_stats[1]['time']
+
+
 def test_save_stats(random_datapoint, databases):
     data = {
         'time': random_datapoint.timestamp,
