@@ -78,9 +78,8 @@ def test_clear_transmitted_with_no_ids(populated_database):
 
 def test_get_stats_bitstream(populated_database):
     test_data, databases = populated_database
-    unpacked = sum([mod.StatBitStream(d.payload).deserialize()
-                    for d in sorted(test_data, key=lambda x: x.timestamp)], [])
-    expected_stream = mod.StatBitStream(unpacked).serialize()
+    sorted_data = sorted(test_data, key=lambda x: x.timestamp)
+    expected_stream = b''.join(bytes(d.payload) for d in sorted_data)
     ids, bitstream = mod.get_stats_bitstream(databases.analytics, limit=None)
     assert len(list(ids)) == len(test_data)
     assert bitstream == expected_stream
@@ -132,9 +131,8 @@ def test_prepare_device_id_only_generates_once(random_path, helpers):
 def test_get_payload(random_path, populated_database):
     device_id = mod.serialized_device_id(random_path)
     test_data, databases = populated_database
-    unpacked = sum([mod.StatBitStream(d.payload).deserialize()
-                    for d in sorted(test_data, key=lambda x: x.timestamp)], [])
-    expected_stream = mod.StatBitStream(unpacked).serialize()
+    sorted_data = sorted(test_data, key=lambda x: x.timestamp)
+    expected_stream = b''.join(bytes(d.payload) for d in sorted_data)
     ids, payload = mod.get_payload(databases.analytics,
                                    random_path,
                                    limit=None)
