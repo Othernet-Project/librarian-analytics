@@ -31,7 +31,7 @@ def download_stats():
     supervisor = request.app.supervisor
     device_id_file = supervisor.config['analytics.device_id_file']
     db = exts.databases.analytics
-    _, payload = get_payload(db, device_id_file)
+    _, payload = get_payload(db, device_id_file, limit=None)
     filename = '{}.stats'.format(utcnow().isoformat())
     return send_file(StringIO(payload), filename, attachment=True)
 
