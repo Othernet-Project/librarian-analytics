@@ -27,6 +27,9 @@ def send_analytics(supervisor, retry_attempt=0):
     throttle = supervisor.config['analytics.throttle']
     db = exts.databases.analytics
     ids, payload = helpers.get_payload(db, device_id_file, throttle)
+    if not ids:
+        # there are no unsent analytics stats, abort
+        return
     server_url = supervisor.config['analytics.server_url']
     try:
         urllib2.urlopen(server_url, urllib.urlencode({'stream': payload}))
