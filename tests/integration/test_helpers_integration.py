@@ -138,3 +138,11 @@ def test_get_payload(random_path, populated_database):
                                    limit=None)
     assert len(list(ids)) == len(test_data)
     assert payload == device_id + expected_stream
+
+
+def test_get_payload_empty(random_path, databases):
+    ids, payload = mod.get_payload(databases.analytics,
+                                   random_path,
+                                   limit=None)
+    assert ids == []
+    assert payload == b''

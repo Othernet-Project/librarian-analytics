@@ -97,6 +97,8 @@ def serialized_device_id(path):
 
 def get_payload(db, device_id_file, limit):
     ids, bitstream = get_stats_bitstream(db, limit)
+    if not ids:
+        return ids, bitstream
     device_id = serialized_device_id(device_id_file)
     return ids, device_id + bitstream
 
