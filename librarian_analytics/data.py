@@ -20,7 +20,7 @@ PHONE = 2
 TABLET = 3
 OTHER = 0
 AGENT_TYPES = [DESKTOP, PHONE, TABLET, OTHER]
-ACTIONS = ['file', 'html', 'image', 'audio', 'video', 'folder', 'download']
+ACTIONS = ['html', 'image', 'audio', 'video', 'folder', 'download', 'file']
 
 # !!! DO NOT CHANGE THE ORDER OF ELEMENTS IN THE OS_FAMILIES LIST !!!
 
