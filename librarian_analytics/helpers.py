@@ -8,7 +8,7 @@ from psycopg2 import Binary
 from bitpack.utils import hex_to_bytes
 from bottle_utils.lazy import caching_lazy
 
-from .data import generate_device_id, StatBitStream
+from .data import generate_device_id
 
 
 ANALYTICS_TABLE = 'stats'
@@ -56,9 +56,7 @@ def cleanup_stats(db, max_records):
 
 
 def merge_streams(stats):
-    unpacked = sum([StatBitStream(bytes(s['payload'])).deserialize()
-                    for s in stats], [])
-    return StatBitStream(unpacked).serialize()
+    return b''.join(bytes(s['payload']) for s in stats)
 
 
 def get_stats_bitstream(db, limit):
