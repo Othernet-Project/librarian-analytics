@@ -1,6 +1,6 @@
 import logging
 try:
-    from io import StringIO
+    from io import BytesIO as StringIO
 except ImportError:
     from StringIO import StringIO
 
