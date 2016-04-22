@@ -29,7 +29,7 @@ def collect_data():
 
 def download_stats():
     supervisor = request.app.supervisor
-    device_id_file = supervisor.conf['analytics.device_id_file']
+    device_id_file = supervisor.config['analytics.device_id_file']
     db = exts.databases.analytics
     _, payload = get_payload(db, device_id_file)
     filename = '{}.stats'.format(utcnow().isoformat())
