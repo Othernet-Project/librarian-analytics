@@ -2,9 +2,10 @@ import logging
 import urllib
 import urllib2
 
+from greentasks import Task
+
 from librarian.core.utils import utcnow
 from librarian.core.exts import ext_container as exts
-from librarian.tasks import Task
 
 from . import helpers
 from .data import StatBitStream
@@ -20,6 +21,29 @@ def store_data(data):
 
 
 class SendAnalytics(Task):
+    name = 'send_analytics'
+    periodic = True
+
+    def get_start_delay(self):
+        return exts.config['analytics.send_interval']
+
+    def get_delay(self, previous_delay):
+        return exts.config['analytics.send_interval']
+
+    def get_retry_delay(self, previous_retry_delay, retry_count):
+        retry_delay = exts.config['analytics.retry_delay']
+        max_retries = exts.config['analytics.max_retries']
+        # in case report sending failed previously, check if we exceeded
+        # the maximum number of retry attempts and if that's the case,
+        # abort mission
+        if retry_count + 1 >= max_retries:
+            logging.error("Analytics data transmission failed %s times "
+                          "in a row. It won't be retried again until the "
+                          "next cycle.", max_retries)
+            return None
+        logging.error("Analytics data transmission failed. Retrying in "
+                      "%s seconds.", retry_delay)
+        return retry_delay
 
     def run(self, retry_attempt=0):
         # report sending might be disabled in config
@@ -34,43 +58,23 @@ class SendAnalytics(Task):
             # there are no unsent analytics stats, abort
             return
         server_url = exts.config['analytics.server_url']
-        try:
-            urllib2.urlopen(server_url, urllib.urlencode({'stream': payload}))
-        except Exception:
-            retry_delay = exts.config['analytics.retry_delay']
-            max_retries = exts.config['analytics.max_retries']
-            # in case report sending failed previously, check if we exceeded
-            # the maximum number of retry attempts and if that's the case,
-            # abort mission
-            if retry_attempt + 1 >= max_retries:
-                logging.error("Analytics data transmission failed %s times "
-                              "in a row. It won't be retried again until the "
-                              "next cycle.", max_retries)
-                return
-            logging.error("Analytics data transmission failed. Retrying in "
-                          "%s seconds.", retry_delay)
-            exts.tasks.schedule(self,
-                                args=(retry_attempt + 1,),
-                                delay=retry_delay)
-        else:
-            helpers.clear_transmitted(db, ids)
-            logging.info("Analytics data transmission complete.")
-
-    @classmethod
-    def install(cls):
-        send_interval = exts.config['analytics.send_interval']
-        exts.tasks.schedule(cls(), delay=send_interval, periodic=False)
+        urllib2.urlopen(server_url, urllib.urlencode({'stream': payload}))
+        helpers.clear_transmitted(db, ids)
+        logging.info("Analytics data transmission complete.")
 
 
 class CleanupAnalytics(Task):
+    name = 'cleanup_analytics'
+    periodic = True
+
+    def get_start_delay(self):
+        return exts.config['analytics.cleanup_interval']
+
+    def get_delay(self, previous_delay):
+        return exts.config['analytics.cleanup_interval']
 
     def run(self):
         db = exts.databases.analytics
         max_records = exts.config['analytics.max_records']
         rowcount = helpers.cleanup_stats(db, max_records)
         logging.info("Analytics cleanup deleted %s records.", rowcount)
-
-    @classmethod
-    def install(cls):
-        cleanup_interval = exts.config['analytics.cleanup_interval']
-        exts.tasks.schedule(cls(), delay=cleanup_interval, periodic=True)
