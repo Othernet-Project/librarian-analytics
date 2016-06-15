@@ -22,13 +22,11 @@ setup(
         'bitpack',
         'user-agents',
         'bottle-fdsend',
-        'librarian_core',
-        'librarian_filemanager',
         'bitarray',
+        'librarian',
     ],
-    dependency_links=[
-        'git+ssh://git@github.com/Outernet-Project/librarian-core.git#egg=librarian_core-0.1',
-        'git+ssh://git@github.com/Outernet-Project/librarian-filemanager.git#egg=librarian_filemanager-0.1',
+    dependency_links=[		
+        'git+ssh://git@github.com/Outernet-Project/librarian.git#egg=librarian-4.0',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
