@@ -24,6 +24,7 @@ setup(
         'bottle-fdsend',
         'bitarray',
         'librarian',
+        'squery-pg'
     ],
     dependency_links=[		
         'git+ssh://git@github.com/Outernet-Project/librarian.git#egg=librarian-4.0',
