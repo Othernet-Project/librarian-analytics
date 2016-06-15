@@ -22,7 +22,7 @@ class AnalyticsData(RouteBase):
 
     def get(self):
         device_id_file = self.config['analytics.device_id_file']
-        db = exts.databases.analytics
+        db = exts.databases.librarian
         _, payload = get_payload(db, device_id_file, limit=None)
         filename = '{}.stats'.format(utcnow().isoformat())
         return send_file(StringIO(payload), filename, attachment=True)

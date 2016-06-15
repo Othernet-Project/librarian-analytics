@@ -13,7 +13,7 @@ from .data import StatBitStream
 
 def store_data(data):
     data['timestamp'] = timestamp = utcnow()
-    helpers.save_stats(exts.databases.analytics, {
+    helpers.save_stats(exts.databases.librarian, {
         'time': timestamp,
         'payload': StatBitStream.to_bytes([data])
     })
@@ -52,7 +52,7 @@ class SendAnalytics(Task):
         # preliminary tests passed, attempt report sending
         device_id_file = exts.config['analytics.device_id_file']
         throttle = exts.config['analytics.throttle']
-        db = exts.databases.analytics
+        db = exts.databases.librarian
         ids, payload = helpers.get_payload(db, device_id_file, throttle)
         if not ids:
             # there are no unsent analytics stats, abort
@@ -74,7 +74,7 @@ class CleanupAnalytics(Task):
         return exts.config['analytics.cleanup_interval']
 
     def run(self):
-        db = exts.databases.analytics
+        db = exts.databases.librarian
         max_records = exts.config['analytics.max_records']
         rowcount = helpers.cleanup_stats(db, max_records)
         logging.info("Analytics cleanup deleted %s records.", rowcount)
