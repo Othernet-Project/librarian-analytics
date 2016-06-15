@@ -13,14 +13,14 @@ from librarian_analytics import helpers as mod
 @pytest.fixture
 def populated_database(random_dataset, databases):
     test_data = list(random_dataset())
-    databases.load_fixtures('analytics', 'stats', [d.row for d in test_data])
+    databases.load_fixtures('librarian', 'stats', [d.row for d in test_data])
     return test_data, databases
 
 
 @pytest.fixture
 def sorted_database(random_dataset, databases):
     test_data = sorted(list(random_dataset()), key=lambda x: x.timestamp)
-    databases.load_fixtures('analytics', 'stats', [d.row for d in test_data])
+    databases.load_fixtures('librarian', 'stats', [d.row for d in test_data])
     return test_data, databases
 
 

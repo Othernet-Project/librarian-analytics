@@ -5,6 +5,7 @@ import datetime
 from collections import namedtuple
 
 import pytest
+import psycopg2
 
 import helpers as helpers_mod
 from squery_pg.pytest_fixtures import *
@@ -40,8 +41,15 @@ def database_config():
     """
     return {
         'databases': [
-            {'name': 'librarian',
-             'migrations': 'librarian_analytics.migrations.analytics'}
+            {
+                'name': 'librarian',
+                'database_sets': [
+                    {
+                        'name': 'analytics',
+                        'migrations': 'librarian_analytics.migrations.analytics',
+                    }
+                ],
+            }
         ],
         'conf': {},
     }
