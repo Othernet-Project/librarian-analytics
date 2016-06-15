@@ -23,6 +23,10 @@ setup(
         'user-agents',
         'bottle-fdsend',
         'bitarray',
+        'librarian',
+    ],
+    dependency_links=[		
+        'git+ssh://git@github.com/Outernet-Project/librarian.git#egg=librarian-4.0',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
