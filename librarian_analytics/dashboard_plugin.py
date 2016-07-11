@@ -1,6 +1,6 @@
 from bottle_utils.i18n import lazy_gettext as _
 
-from librarian_dashboard.dashboard import DashboardPlugin
+from librarian.presentation.dashboard.dashboard import DashboardPlugin
 
 
 class AnalyticsDashboardPlugin(DashboardPlugin):

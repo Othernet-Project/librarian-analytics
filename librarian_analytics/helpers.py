@@ -1,5 +1,3 @@
-import itertools
-
 import time
 import uuid
 
@@ -112,47 +110,3 @@ def as_time(timestamp):
     """
     dt = parser.parse(timestamp)
     return int(time.mktime(dt.timetuple()))
-
-
-class counter:
-    """
-    Callable that merely counts the number of times it was called and returns
-    ``True`` as long as the call count does not exceed the max count.
-
-    Example:
-
-        >>> c = counter(3)
-        >>> c()  # call 1
-        True
-        >>> c()  # call 2
-        True
-        >>> c()  # call 3 (max)
-        True
-        >>> c()  # call 4
-        False
-        >>> c()  # call 5
-        False
-
-    """
-    # FIXME: Move this into librarian utils
-
-    def __init__(self, max=1000):
-        self.max = max
-        self.count = 0
-
-    def __call__(self, *args, **kwargs):
-        self.count += 1
-        return self.count <= self.max
-
-
-def batches(data, batch_size=1000):
-    """
-    Batches of ``batch_size`` items ceated from ``data`` iterable.
-    """
-    # FIXME: Move this into librarian utils
-    data = iter(data)
-    while True:
-        batch = list(itertools.islice(data, batch_size))
-        if not batch:
-            break
-        yield batch

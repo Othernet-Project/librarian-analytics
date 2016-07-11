@@ -41,8 +41,15 @@ def database_config():
     """
     return {
         'databases': [
-            {'name': 'analytics',
-             'migrations': 'librarian_analytics.migrations.analytics'}
+            {
+                'name': 'librarian',
+                'database_sets': [
+                    {
+                        'name': 'analytics',
+                        'migrations': 'librarian_analytics.migrations.analytics',
+                    }
+                ],
+            }
         ],
         'conf': {},
     }

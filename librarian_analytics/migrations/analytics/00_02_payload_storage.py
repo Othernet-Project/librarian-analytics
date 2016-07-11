@@ -1,5 +1,6 @@
+from librarian.core.utils.batches import batches
+
 from ...data import StatBitStream
-from ...helpers import batches
 
 
 MKPAYLOAD = """

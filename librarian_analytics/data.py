@@ -20,7 +20,8 @@ PHONE = 2
 TABLET = 3
 OTHER = 0
 AGENT_TYPES = [DESKTOP, PHONE, TABLET, OTHER]
-ACTIONS = ['file', 'html', 'image', 'audio', 'video', 'folder', 'download']
+ACTIONS = ['html', 'image', 'audio', 'video', 'folder', 'download', 'file']
+FILE_INDEX = ACTIONS.index('file')
 
 # !!! DO NOT CHANGE THE ORDER OF ELEMENTS IN THE OS_FAMILIES LIST !!!
 
@@ -165,7 +166,11 @@ class StatBitStream(BitStream):
         return get_timezone_table()[value]
 
     def preprocess_action(self, value):
-        return ACTIONS.index(value)
+        try:
+            return ACTIONS.index(value)
+        except ValueError:
+            # when uncategorized mime type is used, fall back to file
+            return FILE_INDEX
 
     def postprocess_action(self, value):
         return ACTIONS[value]
